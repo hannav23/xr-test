@@ -1,4 +1,4 @@
-let scene, camera, renderer;
+let scene, camera, renderer, cube;
 
 function initScene() {
   scene = new THREE.Scene();
@@ -16,39 +16,13 @@ function initScene() {
 
   const geometry = new THREE.BoxGeometry(0.2, 0.2, 0.2);
   const material = new THREE.MeshStandardMaterial({ color: 0x00ff00 });
-  const cube = new THREE.Mesh(geometry, material);
-  cube.position.set(0, 0, -0.5); // place in front
+  cube = new THREE.Mesh(geometry, material);
+  cube.position.set(0, 0, -0.5); // half a meter in front
   scene.add(cube);
 }
 
-
 async function startXR() {
-  if (!navigator.xr) {
-    console.error("WebXR not supported in this browser.");
-    return;
-  }
-
-  // Try AR first
-  const arSupported = await navigator.xr.isSessionSupported("immersive-ar");
-  if (arSupported) {
-    console.log("Starting AR session...");
-    await activateXR("immersive-ar", { requiredFeatures: ["hit-test"] });
-    return;
-  }
-
-  // Fallback to VR
-  const vrSupported = await navigator.xr.isSessionSupported("immersive-vr");
-  if (vrSupported) {
-    console.log("Starting VR session...");
-    await activateXR("immersive-vr");
-    return;
-  }
-
-  console.warn("Neither AR nor VR is supported on this device.");
-}
-
-async function activateXR(mode, options = {}) {
-  const xrSession = await navigator.xr.requestSession(mode, options);
+  const xrSession = await navigator.xr.requestSession("immersive-ar", { requiredFeatures: ["local-floor"] });
   const gl = renderer.getContext("webgl", { xrCompatible: true });
   await gl.makeXRCompatible();
   renderer.xr.setSession(xrSession);
@@ -60,6 +34,5 @@ function animate() {
   });
 }
 
-// Initialize
 initScene();
 animate();
