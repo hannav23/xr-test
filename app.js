@@ -1,29 +1,26 @@
 let scene, camera, renderer;
 
 function initScene() {
-  // Create scene
   scene = new THREE.Scene();
 
-  // Camera
-  camera = new THREE.PerspectiveCamera(
-    70,
-    window.innerWidth / window.innerHeight,
-    0.01,
-    1000
-  );
+  camera = new THREE.PerspectiveCamera(70, window.innerWidth/window.innerHeight, 0.01, 1000);
 
-  // Renderer
   renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.xr.enabled = true;
+  renderer.xr.setReferenceSpaceType("local");
   document.body.appendChild(renderer.domElement);
 
-  // Add a cube
+  const light = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 1);
+  scene.add(light);
+
   const geometry = new THREE.BoxGeometry(0.2, 0.2, 0.2);
-  const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+  const material = new THREE.MeshStandardMaterial({ color: 0x00ff00 });
   const cube = new THREE.Mesh(geometry, material);
+  cube.position.set(0, 0, -0.5); // place in front
   scene.add(cube);
 }
+
 
 async function startXR() {
   if (!navigator.xr) {
